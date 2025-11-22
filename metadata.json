@@ -1,0 +1,7 @@
+{
+  "name": "iTune Pod webAPP",
+  "description": "A retro-styled, high-precision guitar tuner featuring an iconic click-wheel interface.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
