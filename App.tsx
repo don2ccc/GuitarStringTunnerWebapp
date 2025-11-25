@@ -11,10 +11,11 @@ const App: React.FC = () => {
   const [selectedStringIndex, setSelectedStringIndex] = useState(6); // Default to Auto (index 6)
   const [tuningResult, setTuningResult] = useState<TuningResult | null>(null);
   const [language, setLanguage] = useState<Language>('en');
+  const [showHelp, setShowHelp] = useState(false);
   
   // Refs
   const analyzerRef = useRef<AudioAnalyzer | null>(null);
-  const requestRef = useRef<number>();
+  const requestRef = useRef<number>(0);
   const lastManualIndexRef = useRef<number>(0); // Default to E2
 
   // Translations accessor
@@ -83,6 +84,9 @@ const App: React.FC = () => {
 
   // Button Handlers
   const handleTogglePlay = () => {
+    // If in help screen, play button does nothing or acts as select
+    if (showHelp) return;
+
     if (isListening) {
       stopAnalyzer();
     } else {
@@ -91,6 +95,7 @@ const App: React.FC = () => {
   };
 
   const handleNext = () => {
+    if (showHelp) return; // Disable wheel in help for now
     setSelectedStringIndex((prev) => {
       const next = (prev + 1) % selectionOrder.length;
       if (next !== autoIndex) {
@@ -101,6 +106,7 @@ const App: React.FC = () => {
   };
 
   const handlePrev = () => {
+    if (showHelp) return; // Disable wheel in help for now
     setSelectedStringIndex((prev) => {
       const next = (prev - 1 + selectionOrder.length) % selectionOrder.length;
       if (next !== autoIndex) {
@@ -111,6 +117,11 @@ const App: React.FC = () => {
   };
 
   const handleMenu = () => {
+    if (showHelp) {
+      setShowHelp(false);
+      return;
+    }
+
     if (selectedStringIndex === autoIndex) {
       // Currently in Auto, switch to last Manual string
       setSelectedStringIndex(lastManualIndexRef.current);
@@ -124,6 +135,10 @@ const App: React.FC = () => {
 
   const toggleLanguage = () => {
     setLanguage(prev => prev === 'en' ? 'zh' : 'en');
+  };
+
+  const toggleHelp = () => {
+    setShowHelp(prev => !prev);
   };
 
   return (
@@ -142,6 +157,8 @@ const App: React.FC = () => {
              isListening={isListening}
              language={language}
              onToggleLanguage={toggleLanguage}
+             showHelp={showHelp}
+             onToggleHelp={toggleHelp}
           />
         </div>
 
